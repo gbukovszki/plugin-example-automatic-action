@@ -6,12 +6,13 @@ use Kanboard\Model\TaskModel;
 use Kanboard\Action\Base;
 
 /**
- * Rename Task Title
+ * Swimlane by Business Value
  *
  * @package action
  * @author  Frederic Guillot
+ * @author  Gabor Bukovszki
  */
-class TaskRename extends Base
+class SwimByValue extends Base
 {
     /**
      * Get automatic action description
@@ -21,7 +22,7 @@ class TaskRename extends Base
      */
     public function getDescription()
     {
-        return t('Change the task title when the task is moved to another column');
+        return t('Move task to Swimlane based on Business Value');
     }
 
     /**
@@ -33,7 +34,7 @@ class TaskRename extends Base
     public function getCompatibleEvents()
     {
         return array(
-            TaskModel::EVENT_MOVE_COLUMN,
+            TaskModel::EVENT_CREATE_UPDATE,
         );
     }
 
@@ -46,7 +47,10 @@ class TaskRename extends Base
     public function getActionRequiredParameters()
     {
         return array(
-            'title' => t('Title'),
+            'swimlane_0' => t('Swimlane name for Sprint candidates'),
+            'swimlane_1' => t('Default swimlane name'),
+            'swimlane_2' => t('Swimlane name for Epics'),
+            'velocity' => t('Team velocity (Sum of complexity per Sprint)'),
         );
     }
 
@@ -60,6 +64,7 @@ class TaskRename extends Base
     {
         return array(
             'task_id',
+            'project_id',
         );
     }
 
@@ -72,7 +77,9 @@ class TaskRename extends Base
      */
     public function doAction(array $data)
     {
-        return $this->taskModificationModel->update(array('id' => $data['task_id'], 'title' => $this->getParam('title')));
+        TaskFinderModel->getAll($data['project_id'],)
+        swimlaneID = SwimlaneModel->getIdByName($data['project_id'],$DestiantionLane);
+        return $this->TaskModificationModel->update(array('id' => $data['task_id'], 'swimlane_id' => $swimlaneID));
     }
 
     /**
